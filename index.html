@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M1 · Value at Risk &amp; Classical Portfolio Theory</title>
+<meta name="description" content="An interactive study of sample moments, Value at Risk, utility theory, and the mathematics of Markowitz portfolio theory.">
+
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="ledger" aria-label="Module contents">
+    <div class="ledger-head">
+      <span class="ledger-mark">M1</span>
+      <span class="ledger-title">Value at Risk &amp;<br>Classical Portfolio Theory</span>
+    </div>
+    <ol class="ledger-list">
+      <li><a href="#overview" data-nav="overview"><span class="ln">&mdash;</span>Overview</a></li>
+      <li><a href="#lesson-1" data-nav="lesson-1"><span class="ln">1</span>Sample Moments &amp; Portfolio Performance</a></li>
+      <li><a href="#lesson-2" data-nav="lesson-2"><span class="ln">2</span>Value at Risk</a></li>
+      <li><a href="#lesson-3" data-nav="lesson-3"><span class="ln">3</span>Utility Theory &amp; Classical Portfolio Theory</a></li>
+      <li><a href="#lesson-4" data-nav="lesson-4"><span class="ln">4</span>Mathematics of Classical Portfolio Theory</a></li>
+      <li><a href="#synthesis" data-nav="synthesis"><span class="ln">&mdash;</span>Putting it together</a></li>
+    </ol>
+    <div class="ledger-foot">
+      <button id="theme-toggle" class="ghost-btn" type="button" aria-pressed="false">Night reading</button>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <!-- ---------- HERO / OVERVIEW ---------- -->
+    <section id="overview" class="section hero">
+      <p class="eyebrow-line">Module 1</p>
+      <h1>Where a track record<br>becomes a decision.</h1>
+      <p class="lede">Four lessons, one thread: turn a raw series of returns into sample
+        moments, use those moments to price the risk of loss, ground the whole exercise
+        in a theory of preference, and finally solve for the portfolio a rational
+        investor should actually hold.</p>
+
+      <div class="hero-demo" id="hero-frontier-wrap">
+        <div class="hero-demo-label">
+          <span>Live: efficient frontier for two assets</span>
+        </div>
+        <canvas id="hero-frontier-canvas" height="260"></canvas>
+        <div class="hero-demo-controls">
+          <label>Correlation ρ
+            <input type="range" id="hero-corr" min="-0.9" max="0.9" step="0.05" value="0.2">
+            <output id="hero-corr-out">0.20</output>
+          </label>
+        </div>
+      </div>
+
+      <div class="path-map" aria-hidden="false">
+        <div class="path-node"><span class="path-num">1</span>Moments<br><small>μ̂, σ̂, skew, kurt</small></div>
+        <div class="path-arrow">&rarr;</div>
+        <div class="path-node"><span class="path-num">2</span>Risk<br><small>VaR, CVaR</small></div>
+        <div class="path-arrow">&rarr;</div>
+        <div class="path-node"><span class="path-num">3</span>Preference<br><small>utility, λ</small></div>
+        <div class="path-arrow">&rarr;</div>
+        <div class="path-node"><span class="path-num">4</span>Allocation<br><small>frontier, CML</small></div>
+      </div>
+    </section>
+
+    <!-- ---------- LESSON 1 ---------- -->
+    <section id="lesson-1" class="section">
+      <p class="eyebrow-line">Lesson 1</p>
+      <h2>Sample Moments &amp; Portfolio Performance</h2>
+      <p>Everything downstream — a VaR figure, a utility score, an efficient frontier —
+        is built out of four numbers you can compute from a return series: its mean,
+        its spread, its lopsidedness, and the weight of its tails.</p>
+
+      <div class="grid-2">
+        <div class="prose-col">
+          <h3>The four sample moments</h3>
+          <p>Given <span class="math">T</span> observed returns
+            <span class="math">r_1,\dots,r_T</span>:</p>
+          <p class="eq" data-tex="\hat\mu=\frac{1}{T}\sum_{t=1}^{T} r_t"></p>
+          <p class="eq" data-tex="\hat\sigma^2=\frac{1}{T-1}\sum_{t=1}^{T}(r_t-\hat\mu)^2"></p>
+          <p class="eq" data-tex="\widehat{\text{Skew}}=\frac{\frac{1}{T}\sum (r_t-\hat\mu)^3}{\hat\sigma^3}\qquad \widehat{\text{Kurt}}=\frac{\frac{1}{T}\sum (r_t-\hat\mu)^4}{\hat\sigma^4}"></p>
+          <p>The mean and variance locate and scale the distribution. Skewness beyond
+            zero flags an asymmetric tail; kurtosis beyond 3 (the normal benchmark) flags
+            a market that surprises you more often than a bell curve would.</p>
+
+          <h3>From assets to a portfolio</h3>
+          <p>A portfolio is a weighted sum. If <span class="math">\mathbf{w}</span>
+            holds the weights, <span class="math">\hat{\boldsymbol\mu}</span> the sample
+            mean vector, and <span class="math">\hat{\boldsymbol\Sigma}</span> the sample
+            covariance matrix of the assets:</p>
+          <p class="eq" data-tex="\hat\mu_p=\mathbf{w}^{\top}\hat{\boldsymbol\mu}\qquad \hat\sigma_p^2=\mathbf{w}^{\top}\hat{\boldsymbol\Sigma}\,\mathbf{w}"></p>
+          <p>Diversification lives entirely in that second equation — the off-diagonal
+            covariance terms are what let a portfolio's risk fall below the
+            weighted-average risk of its parts.</p>
+        </div>
+
+        <div class="widget-col">
+          <div class="widget" id="w-moments">
+            <div class="widget-head">
+              <h4>Moment calculator</h4>
+              <p>Generate or paste a return series and read off its sample moments.</p>
+            </div>
+            <div class="widget-controls">
+              <label>Series
+                <select id="mom-series-select">
+                  <option value="calm">Calm market (low vol)</option>
+                  <option value="volatile">Volatile market</option>
+                  <option value="crash" selected>Crash-prone (negative skew)</option>
+                  <option value="fat">Fat-tailed (high kurtosis)</option>
+                  <option value="custom">Custom, pasted below</option>
+                </select>
+              </label>
+              <textarea id="mom-custom" placeholder="Paste daily returns as %, comma or newline separated, e.g. 0.4, -1.2, 0.8 ..." rows="2"></textarea>
+              <button class="btn" id="mom-regenerate" type="button">Resample</button>
+            </div>
+            <canvas id="mom-hist-canvas" height="180"></canvas>
+            <dl class="stat-grid">
+              <div><dt>Mean</dt><dd id="mom-mean">&mdash;</dd></div>
+              <div><dt>Std. dev.</dt><dd id="mom-std">&mdash;</dd></div>
+              <div><dt>Skewness</dt><dd id="mom-skew">&mdash;</dd></div>
+              <div><dt>Kurtosis</dt><dd id="mom-kurt">&mdash;</dd></div>
+            </dl>
+          </div>
+
+          <div class="widget" id="w-twoasset">
+            <div class="widget-head">
+              <h4>Two-asset portfolio line</h4>
+              <p>Slide the weight in Asset A and watch return, risk and Sharpe move
+                along the curve.</p>
+            </div>
+            <div class="widget-controls compact">
+              <label>μ_A <input type="number" id="ta-muA" value="8" step="0.5">%</label>
+              <label>σ_A <input type="number" id="ta-sigA" value="15" step="0.5">%</label>
+              <label>μ_B <input type="number" id="ta-muB" value="4" step="0.5">%</label>
+              <label>σ_B <input type="number" id="ta-sigB" value="6" step="0.5">%</label>
+              <label>ρ_AB <input type="number" id="ta-rho" value="0.2" step="0.05" min="-1" max="1"></label>
+              <label>rf <input type="number" id="ta-rf" value="2" step="0.25">%</label>
+            </div>
+            <canvas id="ta-curve-canvas" height="200"></canvas>
+            <label class="wide-slider">Weight in A: <output id="ta-w-out">50%</output>
+              <input type="range" id="ta-w" min="0" max="100" value="50">
+            </label>
+            <dl class="stat-grid">
+              <div><dt>Portfolio μ</dt><dd id="ta-mup">&mdash;</dd></div>
+              <div><dt>Portfolio σ</dt><dd id="ta-sigp">&mdash;</dd></div>
+              <div><dt>Sharpe</dt><dd id="ta-sharpe">&mdash;</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- LESSON 2 ---------- -->
+    <section id="lesson-2" class="section">
+      <p class="eyebrow-line">Lesson 2</p>
+      <h2>Value at Risk</h2>
+      <p>Variance treats gains and losses symmetrically. A risk manager usually wants
+        one number that answers a sharper question: <em>how much could I lose, over a
+        given horizon, with a given confidence?</em> That number is Value at Risk.</p>
+
+      <div class="grid-2">
+        <div class="prose-col">
+          <h3>Definition</h3>
+          <p>At confidence level <span class="math">\alpha</span> (e.g. 95%), the VaR
+            of a portfolio is the loss threshold exceeded with probability
+            <span class="math">1-\alpha</span>:</p>
+          <p class="eq" data-tex="P\big(\text{Loss} > \text{VaR}_\alpha\big) = 1-\alpha"></p>
+
+          <h3>Three ways to estimate it</h3>
+          <ul class="def-list">
+            <li><strong>Historical simulation</strong> &mdash; sort the observed
+              returns and read off the empirical <span class="math">(1-\alpha)</span>
+              percentile. No distributional assumption, but limited by the sample you
+              have.</li>
+            <li><strong>Parametric (variance&ndash;covariance)</strong> &mdash; assume
+              returns are normal and use the sample mean and std directly:</li>
+          </ul>
+          <p class="eq" data-tex="\text{VaR}_\alpha = -\big(\hat\mu + z_{1-\alpha}\,\hat\sigma\big)"></p>
+          <ul class="def-list" start="3">
+            <li><strong>Monte Carlo</strong> &mdash; simulate thousands of paths from a
+              fitted model and take the empirical percentile of the simulated
+              outcomes. Slower, but flexible enough for non-normal or path-dependent
+              positions.</li>
+          </ul>
+
+          <h3>Beyond the cutoff: Expected Shortfall</h3>
+          <p>VaR says nothing about how bad the loss is <em>past</em> the threshold.
+            Expected Shortfall (CVaR) averages the losses that live in that tail:</p>
+          <p class="eq" data-tex="\text{CVaR}_\alpha = -E\big[R \mid R < -\text{VaR}_\alpha\big]"></p>
+
+          <h3>Scaling across time</h3>
+          <p>Under i.i.d. normal returns, risk grows with the square root of time:</p>
+          <p class="eq" data-tex="\text{VaR}_\alpha(T\text{ days}) = \text{VaR}_\alpha(1\text{ day})\times\sqrt{T}"></p>
+        </div>
+
+        <div class="widget-col">
+          <div class="widget" id="w-var">
+            <div class="widget-head">
+              <h4>VaR / CVaR explorer</h4>
+              <p>Same return series as Lesson 1 &mdash; change the method and
+                confidence level and watch the cutoff move.</p>
+            </div>
+            <div class="widget-controls">
+              <label>Series
+                <select id="var-series-select">
+                  <option value="calm">Calm market (low vol)</option>
+                  <option value="volatile">Volatile market</option>
+                  <option value="crash" selected>Crash-prone (negative skew)</option>
+                  <option value="fat">Fat-tailed (high kurtosis)</option>
+                </select>
+              </label>
+              <label>Method
+                <select id="var-method">
+                  <option value="historical">Historical simulation</option>
+                  <option value="parametric">Parametric (normal)</option>
+                  <option value="montecarlo">Monte Carlo (normal, 20,000 paths)</option>
+                </select>
+              </label>
+            </div>
+            <label class="wide-slider">Confidence: <output id="var-conf-out">95%</output>
+              <input type="range" id="var-conf" min="90" max="99.5" step="0.5" value="95">
+            </label>
+            <label class="wide-slider">Horizon: <output id="var-horizon-out">1 day</output>
+              <input type="range" id="var-horizon" min="1" max="20" step="1" value="1">
+            </label>
+            <canvas id="var-hist-canvas" height="200"></canvas>
+            <dl class="stat-grid">
+              <div><dt>VaR</dt><dd id="var-value">&mdash;</dd></div>
+              <div><dt>CVaR (ES)</dt><dd id="var-cvar">&mdash;</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- LESSON 3 ---------- -->
+    <section id="lesson-3" class="section">
+      <p class="eyebrow-line">Lesson 3</p>
+      <h2>From Utility Theory to Classical Portfolio Theory</h2>
+      <p>Why should mean and variance be the only things an investor cares about?
+        The answer comes from expected utility theory &mdash; and it's the hinge on
+        which the rest of the module turns.</p>
+
+      <div class="grid-2">
+        <div class="prose-col">
+          <h3>Expected utility &amp; risk aversion</h3>
+          <p>A rational investor is assumed to maximise expected utility of terminal
+            wealth <span class="math">E[U(W)]</span>, not expected wealth itself. A
+            concave <span class="math">U</span> means the investor is risk averse:
+            losses hurt more than equal-sized gains help.</p>
+          <p>The Arrow&ndash;Pratt coefficients quantify this locally:</p>
+          <p class="eq" data-tex="A(W)=-\frac{U''(W)}{U'(W)}\qquad R(W)=W\cdot A(W)"></p>
+
+          <h3>Three common families</h3>
+          <p class="eq" data-tex="\text{Quadratic: } U(W)=W-\tfrac{b}{2}W^2\qquad \text{CARA: } U(W)=-e^{-aW}\qquad \text{CRRA: } U(W)=\frac{W^{1-\gamma}}{1-\gamma}"></p>
+
+          <h3>The bridge to mean&ndash;variance</h3>
+          <p>Quadratic utility is special: it makes expected utility a function of only
+            the mean and variance of wealth, with no other moments involved. (The same
+            reduction also follows if returns are jointly normal, whatever the utility
+            function.) That collapse is what licenses everything in classical
+            portfolio theory:</p>
+          <p class="eq" data-tex="E[U(W)] \;\Longrightarrow\; V(\mu,\sigma^2)=\mu-\tfrac{\lambda}{2}\sigma^2"></p>
+          <p>where <span class="math">\lambda</span> is the investor's coefficient of
+            risk aversion. Indifference curves in mean&ndash;std space slope upward
+            and are convex: an investor needs extra expected return to accept extra
+            risk, and needs increasingly more of it as risk climbs.</p>
+        </div>
+
+        <div class="widget-col">
+          <div class="widget" id="w-utility">
+            <div class="widget-head">
+              <h4>Utility function shapes</h4>
+              <p>Compare concavity across families as risk aversion changes.</p>
+            </div>
+            <div class="widget-controls compact">
+              <label>Family
+                <select id="ut-family">
+                  <option value="quadratic">Quadratic</option>
+                  <option value="cara">CARA (exponential)</option>
+                  <option value="crra">CRRA (power)</option>
+                </select>
+              </label>
+            </div>
+            <label class="wide-slider">Risk aversion: <output id="ut-param-out">2.0</output>
+              <input type="range" id="ut-param" min="0.2" max="6" step="0.1" value="2">
+            </label>
+            <canvas id="ut-canvas" height="200"></canvas>
+          </div>
+
+          <div class="widget" id="w-indiff">
+            <div class="widget-head">
+              <h4>Indifference curves</h4>
+              <p>In mean&ndash;std space, higher <span class="math">\lambda</span>
+                means a steeper demand for compensation.</p>
+            </div>
+            <label class="wide-slider">Risk aversion λ: <output id="ind-lambda-out">4.0</output>
+              <input type="range" id="ind-lambda" min="0.5" max="12" step="0.5" value="4">
+            </label>
+            <canvas id="ind-canvas" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- LESSON 4 ---------- -->
+    <section id="lesson-4" class="section">
+      <p class="eyebrow-line">Lesson 4</p>
+      <h2>The Mathematics of Classical Portfolio Theory</h2>
+      <p>With mean&ndash;variance preferences justified, Markowitz's problem becomes
+        pure linear algebra: given <span class="math">\hat{\boldsymbol\mu}</span> and
+        <span class="math">\hat{\boldsymbol\Sigma}</span>, find the weights that
+        minimise variance for a given return &mdash; and trace out the set of such
+        portfolios.</p>
+
+      <div class="grid-2">
+        <div class="prose-col">
+          <h3>The optimisation problem</h3>
+          <p class="eq" data-tex="\min_{\mathbf w}\ \mathbf{w}^{\top}\boldsymbol\Sigma\mathbf{w} \quad\text{s.t.}\quad \mathbf{w}^{\top}\boldsymbol\mu=\mu_p,\ \ \mathbf{w}^{\top}\mathbf{1}=1"></p>
+          <p>Solving the Lagrangian gives every efficient portfolio as a combination
+            of just two funds &mdash; the two-fund separation theorem &mdash; and a
+            closed-form minimum-variance portfolio with no return target at all:</p>
+          <p class="eq" data-tex="\mathbf{w}_{\text{mvp}}=\frac{\boldsymbol\Sigma^{-1}\mathbf{1}}{\mathbf{1}^{\top}\boldsymbol\Sigma^{-1}\mathbf{1}}"></p>
+
+          <h3>Adding a risk-free asset</h3>
+          <p>Once a risk-free rate <span class="math">r_f</span> is available, every
+            rational investor holds a mix of that asset and a single risky portfolio:
+            the tangency portfolio that maximises the Sharpe ratio.</p>
+          <p class="eq" data-tex="\mathbf{w}_{\text{tan}}=\frac{\boldsymbol\Sigma^{-1}(\boldsymbol\mu-r_f\mathbf{1})}{\mathbf{1}^{\top}\boldsymbol\Sigma^{-1}(\boldsymbol\mu-r_f\mathbf{1})}"></p>
+          <p>The set of portfolios combining <span class="math">r_f</span> and the
+            tangency portfolio forms the Capital Market Line:</p>
+          <p class="eq" data-tex="\mu_p = r_f + \frac{\mu_{\text{tan}}-r_f}{\sigma_{\text{tan}}}\,\sigma_p"></p>
+          <p>That line dominates every point on the risky-only frontier except where
+            it touches &mdash; which is exactly the outcome Lesson 3's indifference
+            curves are drawn toward: each investor just picks the point on the CML
+            that matches their own <span class="math">\lambda</span>.</p>
+        </div>
+
+        <div class="widget-col">
+          <div class="widget" id="w-frontier">
+            <div class="widget-head">
+              <h4>Efficient frontier builder</h4>
+              <p>Three assets, freely set. Watch the minimum-variance portfolio,
+                tangency portfolio, and Capital Market Line update live.</p>
+            </div>
+            <div class="asset-inputs" id="fr-asset-inputs">
+              <!-- filled by JS -->
+            </div>
+            <label class="wide-slider">Risk-free rate: <output id="fr-rf-out">2.0%</output>
+              <input type="range" id="fr-rf" min="0" max="6" step="0.25" value="2">
+            </label>
+            <canvas id="fr-canvas" height="280"></canvas>
+            <dl class="stat-grid">
+              <div><dt>MVP (μ, σ)</dt><dd id="fr-mvp">&mdash;</dd></div>
+              <div><dt>Tangency (μ, σ)</dt><dd id="fr-tan">&mdash;</dd></div>
+              <div><dt>Tangency Sharpe</dt><dd id="fr-sharpe">&mdash;</dd></div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- SYNTHESIS ---------- -->
+    <section id="synthesis" class="section synthesis">
+      <p class="eyebrow-line">Synthesis</p>
+      <h2>The loop closes</h2>
+      <p>The four lessons aren't four separate topics &mdash; they're one pipeline,
+        run in a circle:</p>
+      <div class="loop-grid">
+        <div class="loop-card">
+          <h4>1 &rarr; 2</h4>
+          <p>Lesson 1's sample mean and covariance matrix are exactly the inputs the
+            parametric VaR formula needs. Fatter tails (Lesson 1's kurtosis) are
+            precisely where historical and parametric VaR start to disagree.</p>
+        </div>
+        <div class="loop-card">
+          <h4>2 &rarr; 3</h4>
+          <p>A VaR number is silent on how much an investor should be willing to pay
+            to avoid it. Utility theory supplies that price, via risk aversion
+            <span class="math">\lambda</span> and the certainty equivalent.</p>
+        </div>
+        <div class="loop-card">
+          <h4>3 &rarr; 4</h4>
+          <p>Quadratic utility (or joint normality) collapses preferences onto the
+            mean&ndash;variance plane, which is exactly the objective Markowitz
+            optimisation minimises.</p>
+        </div>
+        <div class="loop-card">
+          <h4>4 &rarr; 1</h4>
+          <p>The optimal portfolio's weights feed straight back into Lesson 1's
+            formulas for <span class="math">\hat\mu_p</span> and
+            <span class="math">\hat\sigma_p^2</span> &mdash; whose risk you would
+            then, once again, want to bound with a VaR figure.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-foot">
+      <p>Built for self-study of Module 1: Value at Risk &amp; Classical Portfolio
+        Theory. All calculations run locally in your browser.</p>
+    </footer>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+<script src="utils.js"></script>
+<script src="charts-theme.js"></script>
+<script src="lesson1.js"></script>
+<script src="lesson2.js"></script>
+<script src="lesson3.js"></script>
+<script src="lesson4.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
